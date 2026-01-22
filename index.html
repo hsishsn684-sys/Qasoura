@@ -8,105 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        :root {
-            --primary-color: #ff9800;
-            --primary-dark: #f57c00;
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #ffffff;
-            --text-secondary: #b0b0b0;
-            --accent-green: #00c853;
-            --danger-color: #ff3d00;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 90px; overflow-x: hidden; }
-
-        /* Splash Screen */
-        #splash-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            animation: fadeOut 1s ease-in-out 3.5s forwards;
-        }
-        .splash-logo { font-size: 80px; color: var(--primary-color); margin-bottom: 20px; animation: pulse 2s infinite; }
-        .splash-title { font-size: 28px; font-weight: 900; color: white; margin-bottom: 10px; opacity: 0; animation: slideUpFade 1s ease-out 0.5s forwards; }
-        .splash-subtitle { font-size: 18px; color: var(--primary-color); font-weight: bold; opacity: 0; animation: slideUpFade 1s ease-out 1s forwards; }
-
-        @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes slideUpFade { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
-        @keyframes scaleIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-        /* Auth Screen */
-        #auth-screen { display: none; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .auth-container { background: rgba(45, 45, 45, 0.95); padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); border: 1px solid #333; backdrop-filter: blur(10px); animation: scaleIn 0.5s ease-out; }
-        .auth-container h2 { margin-bottom: 25px; color: var(--primary-color); font-size: 24px; }
-        .form-group { margin-bottom: 20px; text-align: right; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary); }
-        .form-group input, .form-group select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #444; background: #2a2a2a; color: white; font-size: 16px; outline: none; transition: 0.3s; }
-        .form-group input:focus { border-color: var(--primary-color); background: #333; }
-        .btn-primary { width: 100%; padding: 14px; background: linear-gradient(45deg, var(--primary-color), var(--primary-dark)); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3); transition: transform 0.2s; }
-        .btn-primary:active { transform: scale(0.98); }
-        .toggle-auth { margin-top: 20px; font-size: 14px; color: #aaa; cursor: pointer; text-decoration: underline; }
-
-        /* Store Screen */
-        #store-screen { display: none; max-width: 800px; margin: 0 auto; padding: 15px; padding-top: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: rgba(30, 30, 30, 0.8); padding: 15px; border-radius: 16px; backdrop-filter: blur(5px); border: 1px solid #333; position: sticky; top: 10px; z-index: 90; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
-        .user-details div { font-weight: bold; font-size: 15px; }
-        .user-details small { color: #888; font-size: 11px; }
-        .game-selector select { background: var(--primary-color); color: white; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; font-size: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-
-        .tabs { display: flex; gap: 10px; margin-bottom: 25px; background: #222; padding: 5px; border-radius: 15px; }
-        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: #888; cursor: pointer; border-radius: 12px; font-weight: bold; transition: 0.3s; font-size: 14px; }
-        .tab-btn.active { background: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s ease-out; }
-
-        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        @media (min-width: 600px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
-        
-        .product-card { background: var(--card-bg); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; border: 1px solid #333; transition: transform 0.3s, box-shadow 0.3s; position: relative; }
-        .product-card:active { transform: scale(0.97); }
-        .product-img { width: 100%; height: 100px; object-fit: contain; padding: 15px; background: #181818; border-bottom: 1px solid #333; }
-        .product-details { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-name { font-size: 13px; margin-bottom: 8px; font-weight: bold; line-height: 1.3; color: #eee; }
-        .product-price { color: var(--primary-color); font-weight: 800; font-size: 16px; margin-bottom: 10px; }
-
-        .add-btn { width: 100%; padding: 8px; background: var(--accent-green); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: auto; font-weight: bold; }
-        .evo-options { display: none; margin-top: 5px; gap: 5px; }
-        .evo-option { width: 100%; font-size: 11px; padding: 5px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .evo-option:hover { background: #444; }
-
-        .admin-controls { display: flex; gap: 5px; margin-top: 5px; }
-        .btn-edit { flex: 1; background: var(--primary-color); color: white; border: none; padding: 6px; border-radius: 5px; cursor: pointer; font-size: 11px; }
-        .btn-delete { flex: 1; background: var(--danger-color); color: white; border: none; padding: 6px; border-radius: 5px; cursor: pointer; font-size: 11px; }
-
-        .fab { position: fixed; bottom: 25px; width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 28px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); z-index: 100; transition: transform 0.2s; border: none; color: white; }
-        .fab:active { transform: scale(0.9); }
-        #cart-float { left: 25px; background: var(--primary-color); }
-        #admin-add-btn { right: 25px; background: #9c27b0; display: none; }
-        .fab-badge { position: absolute; top: -2px; right: -2px; background: red; color: white; font-size: 12px; width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid white; font-weight: bold; }
-
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-        .modal-content { background: #252525; width: 100%; max-width: 450px; border-radius: 20px; padding: 25px; max-height: 80vh; overflow-y: auto; border: 1px solid #444; animation: slideUp 0.3s ease-out; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #333; }
-        .cart-total { margin-top: 20px; font-size: 20px; font-weight: 900; text-align: right; color: var(--primary-color); border-top: 2px solid #444; padding-top: 15px; }
-        
-        .social-btn { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; color: white; text-decoration: none; font-weight: bold; font-size: 16px; margin-bottom: 10px; transition: transform 0.2s; }
-        .social-btn:active { transform: scale(0.98); }
-        .btn-whatsapp { background: #25D366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
-        .btn-telegram { background: #0088cc; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3); }
-
-        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; z-index: 3000; display: none; border: 1px solid #555; box-shadow: 0 5px 15px rgba(0,0,0,0.5); font-weight: bold; }
-        .close-btn { position: absolute; top: 15px; left: 15px; background: none; border: none; color: #888; font-size: 24px; cursor: pointer; }
-    </style>
+    <!-- ربط ملف الستايل -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -156,20 +59,29 @@
             <button onclick="logout()" style="background:none; border:none; color:#ff3d00; cursor:pointer; font-size:20px; margin-right:10px;"><i class="fas fa-sign-out-alt"></i></button>
         </header>
 
+        <!-- أزرار التبويب الثلاثة -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('id-shipping')">عبر ال ID</button>
-            <button class="tab-btn" onclick="switchTab('account-shipping')">داخل الحساب</button>
+            <button class="tab-btn active" onclick="switchTab('tab1')">Incr</button>
+            <button class="tab-btn" onclick="switchTab('tab2')">Script</button>
+            <button class="tab-btn" onclick="switchTab('tab3')">Style</button>
         </div>
 
-        <div id="id-shipping" class="tab-content active">
-            <div class="products-grid" id="grid-id"></div>
+        <!-- قسم Incr -->
+        <div id="tab1" class="tab-content active">
+            <div class="products-grid" id="grid-tab1"></div>
         </div>
 
-        <div id="account-shipping" class="tab-content">
+        <!-- قسم Script -->
+        <div id="tab2" class="tab-content">
             <div style="background: rgba(0, 200, 83, 0.1); color: #00c853; padding:12px; border-radius:10px; margin-bottom:15px; font-size:13px; border:1px solid #00c853; text-align:center;">
                 <i class="fas fa-exclamation-circle"></i> تذكير: يجب إرسال ربط ثانوي (Secondary Link) مع الطلب.
             </div>
-            <div class="products-grid" id="grid-account"></div>
+            <div class="products-grid" id="grid-tab2"></div>
+        </div>
+
+        <!-- قسم Style -->
+        <div id="tab3" class="tab-content">
+            <div class="products-grid" id="grid-tab3"></div>
         </div>
 
         <button id="admin-add-btn" class="fab" onclick="openAddProductModal()"><i class="fas fa-plus"></i></button>
@@ -211,7 +123,12 @@
             <input type="hidden" id="edit-prod-source-list">
             <div class="form-group"><label>اسم المنتج</label><input type="text" id="edit-prod-name"></div>
             <div class="form-group"><label>السعر (دينار)</label><input type="number" id="edit-prod-price"></div>
-            <div class="form-group"><label>القائمة</label><select id="edit-prod-list-select"><option value="1">القائمة الأولى (ID)</option><option value="2">القائمة الثانية (حساب)</option></select></div>
+            <div class="form-group">
+                <label>القائمة</label>
+                <select id="edit-prod-list-select">
+                    <!-- الخيارات ستمتلئ بواسطة الجافاسكربت -->
+                </select>
+            </div>
             <div class="form-group">
                 <label>تغيير الصورة (من المعرض)</label>
                 <input type="file" id="edit-prod-file" accept="image/*" style="padding:10px; background:#333;">
@@ -222,390 +139,8 @@
         </div>
     </div>
 
-    <!-- استدعاء مكتبات Firebase -->
-    <script type="module">
-        // استيراد دوال Firebase عبر الإنترنت (CDN)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, remove, update } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-
-        // --- مفاتيح المشروع الجديد (fadl-ca30c) ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyD01U4W5-NnCpI2H7m3gERNqx_4GMhLaVY",
-            authDomain: "fadl-ca30c.firebaseapp.com",
-            databaseURL: "https://fadl-ca30c-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "fadl-ca30c",
-            storageBucket: "fadl-ca30c.firebasestorage.app",
-            messagingSenderId: "11016741410",
-            appId: "1:11016741410:web:9f75ede0ccc13d6625207b",
-            measurementId: "G-X18V9W5BTX"
-        };
-        // --------------------------------------------------
-
-        // تهيئة التطبيق وقاعدة البيانات
-        let app, db;
-
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getDatabase(app);
-            console.log("Firebase Connected Successfully to fadl-ca30c");
-        } catch (e) {
-            console.error("Firebase Error:", e);
-            alert("خطأ في الاتصال بقاعدة البيانات، تأكد من القواعد (Rules).");
-        }
-
-        // جعل الدوال متاحة للنطاق العام (Global)
-        window.fetchFirebaseData = () => {
-            if(!db) return;
-
-            // الاستماع للتغييرات في القائمة 1
-            const tab1Ref = ref(db, 'products/tab1');
-            onValue(tab1Ref, (snapshot) => {
-                const data = snapshot.val();
-                window.productsTab1 = data ? Object.values(data) : [];
-                if(window.renderProducts) window.renderProducts();
-            });
-
-            // الاستماع للتغييرات في القائمة 2
-            const tab2Ref = ref(db, 'products/tab2');
-            onValue(tab2Ref, (snapshot) => {
-                const data = snapshot.val();
-                window.productsTab2 = data ? Object.values(data) : [];
-                if(window.renderProducts) window.renderProducts();
-            });
-        };
-
-        window.pushFirebaseProduct = (listNum, product) => {
-            if(!db) return;
-            const path = listNum === 1 ? 'products/tab1' : 'products/tab2';
-            push(ref(db, path), product);
-        };
-
-        window.updateFirebaseProduct = (listNum, product) => {
-            if(!db) return;
-            const path = listNum === 1 ? 'products/tab1' : 'products/tab2';
-            const dbRef = ref(db, path);
-            onValue(dbRef, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    if(childSnapshot.val().id == product.id) {
-                        update(ref(db, `${path}/${childSnapshot.key}`), product);
-                    }
-                });
-            }, {onlyOnce: true});
-        };
-
-        window.deleteFirebaseProduct = (listNum, productID) => {
-            if(!db) return;
-            const path = listNum === 1 ? 'products/tab1' : 'products/tab2';
-            const dbRef = ref(db, path);
-            onValue(dbRef, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    if(childSnapshot.val().id == productID) {
-                        remove(ref(db, `${path}/${childSnapshot.key}`));
-                    }
-                });
-            }, {onlyOnce: true});
-        };
-
-    </script>
-
-    <script>
-        // --- تهيئة البيانات (تعتمد على Firebase) ---
-        let productsTab1 = []; 
-        let productsTab2 = []; 
-        
-        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        let usersDB = JSON.parse(localStorage.getItem('usersDB')) || [];
-        let cart = [];
-        let selectedEvo = {};
-        
-        // --- بدء التطبيق ---
-        window.onload = function() {
-            setTimeout(() => {
-                const splash = document.getElementById('splash-screen');
-                if(splash) splash.style.display = 'none';
-                
-                // جلب البيانات من السحابة
-                if(typeof fetchFirebaseData === 'function') fetchFirebaseData();
-
-                if(currentUser) loadStore();
-                else document.getElementById('auth-screen').style.display = 'flex';
-            }, 4000); 
-        };
-
-        // --- دوال النظام (Auth) ---
-        function toggleAuth(screen) {
-            if(screen === 'login') {
-                document.getElementById('register-form').style.display = 'none';
-                document.getElementById('login-form').style.display = 'block';
-            } else {
-                document.getElementById('register-form').style.display = 'block';
-                document.getElementById('login-form').style.display = 'none';
-            }
-        }
-
-        function registerUser() {
-            const name = document.getElementById('reg-name').value;
-            const age = document.getElementById('reg-age').value;
-            const gov = document.getElementById('reg-gov').value;
-            const pass = document.getElementById('reg-pass').value;
-
-            if(!name || !age || !gov || !pass) { alert('يرجى ملء جميع الحقول'); return; }
-
-            let newID; let isUnique = false;
-            while(!isUnique) {
-                newID = Math.floor(100000 + Math.random() * 900000);
-                if(!usersDB.find(u => u.id === newID)) isUnique = true;
-            }
-
-            const newUser = { id: newID, name, age, gov, pass, avatar: `https://ui-avatars.com/api/?name=${name}&background=random` };
-            usersDB.push(newUser);
-            localStorage.setItem('usersDB', JSON.stringify(usersDB));
-            loginUser(newID, pass);
-        }
-
-        function loginUser(inputId = null, inputPass = null) {
-            const id = inputId || document.getElementById('login-id').value;
-            const pass = inputPass || document.getElementById('login-pass').value;
-
-            if(id === 'admin' && pass === '123') {
-                currentUser = { name: 'Admin', role: 'admin' };
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loadStore();
-                return;
-            }
-
-            const user = usersDB.find(u => u.id == id && u.pass == pass);
-            if(user) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                loadStore();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('currentUser');
-            location.reload();
-        }
-
-        function loadStore() {
-            if(!currentUser) return;
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('store-screen').style.display = 'block';
-            
-            document.getElementById('header-name').innerText = currentUser.name;
-            document.getElementById('header-id').innerText = currentUser.role === 'admin' ? 'مدير النظام' : `ID: ${currentUser.id} | ${currentUser.gov}`;
-            document.getElementById('header-avatar').src = currentUser.role === 'admin' ? 'https://ui-avatars.com/api/?name=Admin&background=9c27b0&color=fff' : currentUser.avatar;
-
-            if(currentUser.role === 'admin') {
-                document.getElementById('cart-float').style.display = 'none';
-                document.getElementById('admin-add-btn').style.display = 'flex';
-            } else {
-                document.getElementById('cart-float').style.display = 'flex';
-                document.getElementById('admin-add-btn').style.display = 'none';
-            }
-
-            renderProducts();
-        }
-
-        // --- عرض المنتجات ---
-        function renderProducts() {
-            const gridId = document.getElementById('grid-id');
-            const gridAcc = document.getElementById('grid-account');
-            gridId.innerHTML = '';
-            gridAcc.innerHTML = '';
-
-            productsTab1.forEach(p => gridId.appendChild(createProductCard(p, 1)));
-            productsTab2.forEach(p => gridAcc.appendChild(createProductCard(p, 2)));
-        }
-
-        function createProductCard(product, listNum) {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            let priceDisplay = product.price > 0 ? product.price + ' دينار' : 'حسب الطلب';
-            
-            let evoHTML = '';
-            if(product.isEvo) {
-                priceDisplay = 'من 1000 دينار';
-                evoHTML = `
-                    <div class="evo-options" id="evo-${product.id}">
-                        <button class="evo-option" onclick="selectEvo(this, ${product.id}, '7 أيام', 1000)">7 أيام</button>
-                        <button class="evo-option" onclick="selectEvo(this, ${product.id}, '30 يوم', 3300)">30 يوم</button>
-                    </div>
-                `;
-            }
-
-            let actionButtons = '';
-            if(currentUser.role === 'admin') {
-                actionButtons = `<div class="admin-controls"><button class="btn-edit" onclick="openEditModal(${listNum}, '${product.id}')">تعديل</button><button class="btn-delete" onclick="deleteProduct(${listNum}, '${product.id}')">حذف</button></div>`;
-            } else {
-                actionButtons = `<button class="add-btn" onclick='addToCart(${JSON.stringify(product)})'><i class="fas fa-cart-plus"></i> إضافة</button>${evoHTML}`;
-            }
-
-            card.innerHTML = `
-                <img src="${product.img}" class="product-img" onerror="this.src='https://picsum.photos/seed/${product.id}/150/150'">
-                <div class="product-details">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-price" id="price-${product.id}">${priceDisplay}</div>
-                    ${currentUser.role !== 'admin' ? '' : evoHTML}
-                    ${actionButtons}
-                </div>
-            `;
-            return card;
-        }
-
-        function selectEvo(btn, productId, label, price) {
-            const parent = document.getElementById(`evo-${productId}`);
-            Array.from(parent.children).forEach(child => child.style.background = '#333');
-            btn.style.background = 'var(--primary-color)';
-            document.getElementById(`price-${productId}`).innerText = price + ' دينار';
-            selectedEvo[productId] = { label, price };
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(tabId === 'id-shipping') document.querySelector('.tabs button:nth-child(1)').classList.add('active');
-            else document.querySelector('.tabs button:nth-child(2)').classList.add('active');
-        }
-
-        // --- إدارة المنتجات (Firebase) ---
-        function openAddProductModal() {
-            document.getElementById('modal-title').innerText = 'إضافة منتج جديد';
-            document.getElementById('edit-prod-id').value = '';
-            document.getElementById('edit-prod-name').value = '';
-            document.getElementById('edit-prod-price').value = '';
-            document.getElementById('edit-prod-file').value = '';
-            document.getElementById('edit-prod-list-select').value = '1';
-            document.getElementById('product-modal').style.display = 'flex';
-        }
-
-        function openEditModal(listNum, productId) {
-            const list = listNum === 1 ? productsTab1 : productsTab2;
-            const product = list.find(p => p.id == productId);
-            document.getElementById('modal-title').innerText = 'تعديل المنتج';
-            document.getElementById('edit-prod-id').value = productId;
-            document.getElementById('edit-prod-source-list').value = listNum;
-            document.getElementById('edit-prod-name').value = product.name;
-            document.getElementById('edit-prod-price').value = product.price;
-            document.getElementById('edit-prod-list-select').value = listNum;
-            document.getElementById('edit-prod-type').value = product.isEvo ? 'evo' : 'normal';
-            document.getElementById('product-modal').style.display = 'flex';
-        }
-
-        function closeProductModal() { document.getElementById('product-modal').style.display = 'none'; }
-
-        function deleteProduct(listNum, productId) {
-            if(confirm('حذف هذا المنتج نهائياً؟')) {
-                if(typeof deleteFirebaseProduct === 'function') {
-                    deleteFirebaseProduct(listNum, productId);
-                }
-            }
-        }
-
-        function saveProduct() {
-            const id = document.getElementById('edit-prod-id').value;
-            const name = document.getElementById('edit-prod-name').value;
-            const price = parseFloat(document.getElementById('edit-prod-price').value);
-            const targetListNum = parseInt(document.getElementById('edit-prod-list-select').value);
-            const isEvo = document.getElementById('edit-prod-type').value === 'evo';
-            const fileInput = document.getElementById('edit-prod-file');
-
-            if(!name || isNaN(price)) { alert('ادخل الاسم والسعر'); return; }
-
-            const finalizeSave = (imgSrc) => {
-                const newProduct = { id: id ? id : Date.now(), name, price, img: imgSrc, isEvo };
-
-                if(id) {
-                    // تحديث
-                    if(typeof updateFirebaseProduct === 'function') {
-                        updateFirebaseProduct(targetListNum, newProduct);
-                    }
-                } else {
-                    // إضافة
-                    if(typeof pushFirebaseProduct === 'function') {
-                        pushFirebaseProduct(targetListNum, newProduct);
-                    }
-                }
-                closeProductModal();
-            };
-
-            if(fileInput.files && fileInput.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) { finalizeSave(e.target.result); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                if(id) {
-                    const list = parseInt(document.getElementById('edit-prod-source-list').value) === 1 ? productsTab1 : productsTab2;
-                    const oldProd = list.find(p => p.id == id);
-                    finalizeSave(oldProd.img);
-                } else { finalizeSave('images/gems_img.jpg'); }
-            }
-        }
-
-        // --- السلة ---
-        function addToCart(product) {
-            let finalPrice = product.price;
-            let finalName = product.name;
-            if(product.isEvo) {
-                if(!selectedEvo[product.id]) { alert('اختر المدة أولاً'); document.getElementById(`evo-${product.id}`).style.display = 'flex'; return; }
-                finalPrice = selectedEvo[product.id].price;
-                finalName = `${product.name} (${selectedEvo[product.id].label})`;
-            }
-            const existingItem = cart.find(i => i.cartId === product.id + (selectedEvo[product.id]?.label || ''));
-            if(existingItem) { existingItem.qty++; showToast('تم تحديث الكمية'); } 
-            else { cart.push({ cartId: product.id + (selectedEvo[product.id]?.label || ''), name: finalName, price: finalPrice, img: product.img, qty: 1 }); showToast('تمت الإضافة للسلة'); }
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const count = cart.reduce((acc, item) => acc + item.qty, 0);
-            document.getElementById('cart-count').innerText = count;
-            const container = document.getElementById('cart-items-container');
-            if(cart.length === 0) { container.innerHTML = '<p style="text-align:center; color:#666; padding:20px;">السلة فارغة</p>'; } 
-            else {
-                container.innerHTML = ''; let total = 0;
-                cart.forEach((item, index) => {
-                    total += item.price * item.qty;
-                    container.innerHTML += `
-                        <div class="cart-item">
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <img src="${item.img}" style="width:40px; height:40px; border-radius:8px; object-fit:contain; background:#333;">
-                                <div><div style="font-weight:bold; font-size:14px;">${item.name}</div><small style="color:#888;">${item.price} دينار</small></div>
-                            </div>
-                            <div style="display:flex; align-items:center; gap:10px;"><span style="font-weight:bold; font-size:18px; color:var(--primary-color);">${item.qty}</span><button onclick="removeFromCart(${index})" style="background:none; border:none; color:#ff3d00; cursor:pointer; font-size:18px;"><i class="fas fa-trash"></i></button></div>
-                        </div>`;
-                });
-                document.getElementById('total-price').innerText = total;
-            }
-        }
-        function removeFromCart(index) { cart.splice(index, 1); updateCartUI(); }
-        function openCart() { document.getElementById('cart-modal').style.display = 'flex'; }
-        function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
-        function showToast(msg) { const toast = document.getElementById('toast'); toast.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`; toast.style.display = 'block'; setTimeout(() => toast.style.display = 'none', 2000); }
-
-        // --- الطلب ---
-        function processOrder() {
-            if(cart.length === 0) { alert('السلة فارغة! الرجاء اختيار منتجات للشراء.'); return; }
-            closeCart();
-            let msg = `*طلب جديد - قسورة للشحن*\n\n`;
-            msg += `👤 الاسم: ${currentUser.name}\n🆔 ID: ${currentUser.id}\n📍 المحافظة: ${currentUser.gov}\n-----------------------\n`;
-            let total = 0;
-            cart.forEach(item => { msg += `🔹 ${item.name} (${item.qty}x)\n`; total += item.price * item.qty; });
-            msg += `-----------------------\n💰 *المجموع: ${total} دينار*`;
-            document.getElementById('link-whatsapp').href = `https://wa.me/9647768416326?text=${encodeURIComponent(msg)}`;
-            const tgBtn = document.querySelector('#contact-modal .btn-telegram');
-            tgBtn.onclick = function() {
-                navigator.clipboard.writeText(msg).then(() => { alert('تم نسخ الفاتورة، الصقها في المحادثة.'); window.open('https://t.me/mk_6k2', '_blank'); });
-            };
-            document.getElementById('contact-modal').style.display = 'flex';
-        }
-
-        function closeContactModal() {
-            document.getElementById('contact-modal').style.display = 'none'; cart = []; updateCartUI();
-        }
-    </script>
+    <!-- ربط ملف الجافاسكربت -->
+    <!-- ملاحظة هامة: type="module" ضروري هنا لأننا نستخدم import في script.js -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
